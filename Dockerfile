@@ -1,5 +1,5 @@
 FROM lsiobase/xenial
-MAINTAINER zaggash <zaggash@users.noreply.github.com>, sparklyballs
+MAINTAINER zaggash <zaggash@users.noreply.github.com>, sparklyballs, ajw107 (Alex Wood)
 
 # set version label
 ARG BUILD_DATE
@@ -14,11 +14,15 @@ ARG DEBIAN_FRONTEND="noninteractive"
 ARG COPIED_APP_PATH="/tmp/git-app"
 ARG BUNDLE_DIR="/tmp/bundle-dir"
 
+#make life easy for yourself
+ENV TERM=xterm-color
+
 # install packages
 RUN \
  apt-get update && \
  apt-get install -y \
-	curl && \
+	curl 
+	nano && \
  curl -sL \
 	https://deb.nodesource.com/setup_0.10 | bash - && \
  apt-get install -y \
@@ -76,6 +80,7 @@ RUN \
 
 # add local files
 COPY root/ /
+RUN chmod +x /usr/bin/ll
 
 # ports and volumes
 EXPOSE 3000
