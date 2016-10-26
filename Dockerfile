@@ -43,19 +43,19 @@ RUN \
  #&& \
 
 # install plexrequests
-RUN plexreq_tag=$(curl -sX GET "https://api.github.com/repos/lokenx/plexrequests-meteor/releases/latest" \
-	| awk '/tag_name/{print $4;exit}' FS='[""]') 
+RUN plexreq_tarball_url=$(curl -sX GET "https://api.github.com/repos/lokenx/plexrequests-meteor/releases/latest" \
+	| awk '/tarball_url/{print $4;exit}' FS='[""]') 
 	#&& \
  RUN curl -o \
- /tmp/source.tar.gz -L \
-	"https://github.com/lokenx/plexrequests-meteor/archive/${plexreq_tag}.tar.gz" 
+ /tmp/source.tar.gz -L "${plexreq_tarball_url}"
+#	"https://github.com/lokenx/plexrequests-meteor/archive/${plexreq_tag}.tar.gz" 
 	#&& \
  RUN mkdir -p \
 	$COPIED_APP_PATH 
 	#&& \
  RUN tar xvf \
  /tmp/source.tar.gz -C \
-	$COPIED_APP_PATH --strip-components=1 
+	"$COPIED_APP_PATH" --strip-components=1 
 	#&& \
 RUN cd $COPIED_APP_PATH 
  #&& \
