@@ -21,7 +21,7 @@ ENV TERM=xterm-color
 RUN \
  apt-get update && \
  apt-get install -y \
-	curl 
+	curl \
 	nano && \
  curl -sL \
 	https://deb.nodesource.com/setup_0.10 | bash - && \
