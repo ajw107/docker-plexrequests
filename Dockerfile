@@ -7,7 +7,7 @@ ARG VERSION
 LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 
 # package versions
-ARG MONGO_VERSION="3.2.9"
+ARG MONGO_VERSION="3.2.10"
 
 # environment settings
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -63,12 +63,16 @@ RUN \
 	--server=http://localhost:3000 && \
  cd $BUNDLE_DIR/bundle/programs/server/ && \
  npm i && \
- mv $BUNDLE_DIR/bundle /app && \
+ mv $BUNDLE_DIR/bundle /app 
+ 
+ #&& \
 
 # cleanup
- npm cache clear > /dev/null 2>&1 && \
- apt-get clean && \
- rm -rf \
+RUN npm cache clear > /dev/null 2>&1 
+#&& \
+RUN apt-get clean 
+ #&& \
+RUN rm -rf \
 	/tmp/* \
 	/tmp/.??* \
 	/usr/local/bin/meteor \
