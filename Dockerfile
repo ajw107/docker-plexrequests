@@ -39,40 +39,48 @@ RUN \
  tar xf \
  /tmp/mongo.tgz -C \
 	/tmp/mongo_app --strip-components=1 && \
- mv /tmp/mongo_app/bin/mongod /usr/bin/ && \
+ mv /tmp/mongo_app/bin/mongod /usr/bin/ 
+ #&& \
 
 # install plexrequests
- plexreq_tag=$(curl -sX GET "https://api.github.com/repos/lokenx/plexrequests-meteor/releases/latest" \
-	| awk '/tag_name/{print $4;exit}' FS='[""]') && \
- curl -o \
+RUN plexreq_tag=$(curl -sX GET "https://api.github.com/repos/lokenx/plexrequests-meteor/releases/latest" \
+	| awk '/tag_name/{print $4;exit}' FS='[""]') 
+	#&& \
+ RUN curl -o \
  /tmp/source.tar.gz -L \
-	"https://github.com/lokenx/plexrequests-meteor/archive/${plexreq_tag}.tar.gz" && \
- mkdir -p \
-	$COPIED_APP_PATH && \
- tar xvf \
+	"https://github.com/lokenx/plexrequests-meteor/archive/${plexreq_tag}.tar.gz" 
+	#&& \
+ RUN mkdir -p \
+	$COPIED_APP_PATH 
+	#&& \
+ RUN tar xvf \
  /tmp/source.tar.gz -C \
-	$COPIED_APP_PATH --strip-components=1 && \
- cd $COPIED_APP_PATH && \
- HOME=/tmp \
+	$COPIED_APP_PATH --strip-components=1 
+	#&& \
+RUN cd $COPIED_APP_PATH 
+ #&& \
+ RUN HOME=/tmp \
  curl -sL \
 	https://install.meteor.com | \
-	sed s/--progress-bar/-sL/g | /bin/sh && \
- HOME=/tmp \
+	sed s/--progress-bar/-sL/g | /bin/sh 
+	#&& \
+RUN HOME=/tmp \
  meteor build \
 	--directory $BUNDLE_DIR \
-	--server=http://localhost:3000 && \
- cd $BUNDLE_DIR/bundle/programs/server/ && \
- npm i && \
- mv $BUNDLE_DIR/bundle /app 
+	--server=http://localhost:3000 
+	#&& \
+ RUN cd $BUNDLE_DIR/bundle/programs/server/ 
+ #&& \
+ RUN npm i 
+ #&& \
+ RUN mv $BUNDLE_DIR/bundle /app 
  
  #&& \
 
 # cleanup
-RUN npm cache clear > /dev/null 2>&1 
-#&& \
-RUN apt-get clean 
- #&& \
-RUN rm -rf \
+RUN npm cache clear > /dev/null 2>&1 && \
+    apt-get clean && \
+    rm -rf \
 	/tmp/* \
 	/tmp/.??* \
 	/usr/local/bin/meteor \
