@@ -24,7 +24,8 @@ RUN \
 	curl \
 	nano && \
  curl -sL \
-	https://deb.nodesource.com/setup_0.10 | bash - && \
+#	https://deb.nodesource.com/setup_0.10 | bash - && \
+        https://deb.nodesource.com/setup_4.x | bash - && \
  apt-get install -y \
 	--no-install-recommends \
 	nodejs=0.10.48-1nodesource1~xenial1 && \
@@ -44,7 +45,7 @@ RUN \
 
 # install plexrequests
 #god I hate nested quotes
-RUN plexreq_tarball_url='$(curl -sX GET '\''https://api.github.com/repos/lokenx/plexrequests-meteor/releases/latest'\'' | awk '\''/tarball_url/{print $4;exit}'\'' FS='\''[""]'\'')'
+RUN plexreq_tarball_url=$(curl -sX GET "https://api.github.com/repos/lokenx/plexrequests-meteor/releases/latest" | awk '/tarball_url/{print $4;exit}' FS='[""]')
 	#&& \
 RUN echo "plexreq_tarball_url: [${plexreq_tarball_url}]"
  RUN curl -o \
