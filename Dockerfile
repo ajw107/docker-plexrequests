@@ -7,7 +7,7 @@ ARG VERSION
 LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 
 # package versions
-ARG MONGO_VERSION="3.2.10"
+ARG MONGO_VERSION="3.4.2"
 
 # environment settings
 ARG DEBIAN_FRONTEND="noninteractive"
