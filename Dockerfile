@@ -16,6 +16,8 @@ ARG BUNDLE_DIR="/tmp/bundle-dir"
 
 #make life easy for yourself
 ENV TERM=xterm-color
+ENV METEOR_ALLOW_SUPERUSER=1
+ENV METEOR_NO_RELEASE_CHECK=1
 
 # install packages
 RUN \
@@ -24,11 +26,12 @@ RUN \
 	curl \
 	nano && \
  curl -sL \
-#	https://deb.nodesource.com/setup_0.10 | bash - && \
-        https://deb.nodesource.com/setup_4.x | bash - && \
+	https://deb.nodesource.com/setup_0.10 | bash - && \
+#        https://deb.nodesource.com/setup_4.x | bash - && \
  apt-get install -y \
 	--no-install-recommends \
 	nodejs=0.10.48-1nodesource1~xenial1 && \
+#        nodejs && \
  npm install -g npm@latest && \
 
 # install mongo
@@ -40,44 +43,28 @@ RUN \
  tar xf \
  /tmp/mongo.tgz -C \
 	/tmp/mongo_app --strip-components=1 && \
- mv /tmp/mongo_app/bin/mongod /usr/bin/ 
- #&& \
+ mv /tmp/mongo_app/bin/mongod /usr/bin/
 
 # install plexrequests
-#god I hate nested quotes
-RUN plexreq_tarball_url=$(curl -sX GET "https://api.github.com/repos/lokenx/plexrequests-meteor/releases/latest" | awk '/tarball_url/{print $4;exit}' FS='[""]')
-	#&& \
-RUN echo "plexreq_tarball_url: [${plexreq_tarball_url}]"
- RUN curl -o \
- /tmp/source.tar.gz -L "${plexreq_tarball_url}"
-#	"https://github.com/lokenx/plexrequests-meteor/archive/${plexreq_tag}.tar.gz" 
-	#&& \
- RUN mkdir -p \
-	$COPIED_APP_PATH 
-	#&& \
- RUN tar xvf \
- /tmp/source.tar.gz -C \
-	"$COPIED_APP_PATH" --strip-components=1 
-	#&& \
-RUN cd $COPIED_APP_PATH 
- #&& \
- RUN HOME=/tmp \
+RUN curl -o \
+ /tmp/source.tar.gz -L https://api.github.com/repos/lokenx/plexrequests-meteor/tarball &&\
+ mkdir -p \
+	$COPIED_APP_PATH && \
+ tar xvf \
+ /tmp/source.tar.gz --strip-components=1 -C \
+	"$COPIED_APP_PATH" && \
+ cd  "${COPIED_APP_PATH}" && \
+ HOME=/tmp \
  curl -sL \
 	https://install.meteor.com | \
-	sed s/--progress-bar/-sL/g | /bin/sh 
-	#&& \
-RUN HOME=/tmp \
+	sed s/--progress-bar/-sL/g | /bin/sh && \
+ HOME=/tmp \
  meteor build \
-	--directory $BUNDLE_DIR \
-	--server=http://localhost:3000 
-	#&& \
- RUN cd $BUNDLE_DIR/bundle/programs/server/ 
- #&& \
- RUN npm i 
- #&& \
- RUN mv $BUNDLE_DIR/bundle /app 
- 
- #&& \
+	--directory ${BUNDLE_DIR} \
+	--server=http://localhost:3000 && \
+cd $BUNDLE_DIR/bundle/programs/server/ && \
+npm i && \
+mv $BUNDLE_DIR/bundle /app
 
 # cleanup
 RUN npm cache clear > /dev/null 2>&1 && \
