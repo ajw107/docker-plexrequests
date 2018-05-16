@@ -41,7 +41,7 @@ RUN \
  tar xf \
  /tmp/mongo.tgz -C \
 	/tmp/mongo_app --strip-components=1 && \
- mv /tmp/mongo_app/bin/mongod /usr/bin/
+ mv /tmp/mongo_app/bin/mongod /usr/bin/ && \
 
 echo "**** install plexrequests ****" && \
 RUN curl -o \
