@@ -1,10 +1,10 @@
-FROM lsiobase/xenial
-MAINTAINER zaggash <zaggash@users.noreply.github.com>, sparklyballs, ajw107 (Alex Wood)
+FROM lsiobase/ubuntu:xenial
 
 # set version label
 ARG BUILD_DATE
 ARG VERSION
 LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
+LABEL MAINTAINER="zaggash <zaggash@users.noreply.github.com>, sparklyballs, ajw107 (Alex Wood)"
 
 # package versions
 ARG MONGO_VERSION="3.4.2"
@@ -19,25 +19,23 @@ ENV TERM=xterm-color
 ENV METEOR_ALLOW_SUPERUSER=1
 ENV METEOR_NO_RELEASE_CHECK=1
 
-# install packages
 RUN \
+ echo "**** install packages ****" && \
  apt-get update && \
  apt-get install -y \
 	curl \
 	nano && \
+ echo "***** install nodejs ****" && \
  curl -sL \
 	https://deb.nodesource.com/setup_0.10 | bash - && \
-#        https://deb.nodesource.com/setup_4.x | bash - && \
  apt-get install -y \
 	--no-install-recommends \
 	nodejs=0.10.48-1nodesource1~xenial1 && \
-#        nodejs && \
- npm install -g npm@latest && \
 
-# install mongo
+ echo "**** install mongo ****" && \
  curl -o \
  /tmp/mongo.tgz -L \
-	https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-$MONGO_VERSION.tgz  && \
+	https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-${MONGO_VERSION}.tgz  && \
  mkdir -p \
 	/tmp/mongo_app && \
  tar xf \
@@ -45,29 +43,28 @@ RUN \
 	/tmp/mongo_app --strip-components=1 && \
  mv /tmp/mongo_app/bin/mongod /usr/bin/
 
-# install plexrequests
+echo "**** install plexrequests ****" && \
 RUN curl -o \
  /tmp/source.tar.gz -L https://api.github.com/repos/lokenx/plexrequests-meteor/tarball &&\
  mkdir -p \
-	$COPIED_APP_PATH && \
- tar xvf \
+	${COPIED_APP_PATH} && \
+ tar xf \
  /tmp/source.tar.gz --strip-components=1 -C \
-	"$COPIED_APP_PATH" && \
+	"${COPIED_APP_PATH}" && \
  cd  "${COPIED_APP_PATH}" && \
  HOME=/tmp \
  curl -sL \
-	https://install.meteor.com | \
+	https://install.meteor.com/?release=1.4.1.3 | \
 	sed s/--progress-bar/-sL/g | /bin/sh && \
  HOME=/tmp \
  meteor build \
 	--directory ${BUNDLE_DIR} \
 	--server=http://localhost:3000 && \
-cd $BUNDLE_DIR/bundle/programs/server/ && \
+cd ${BUNDLE_DIR}/bundle/programs/server/ && \
 npm i && \
-mv $BUNDLE_DIR/bundle /app
-
-# cleanup
-RUN npm cache clear > /dev/null 2>&1 && \
+mv ${BUNDLE_DIR}/bundle /app && \
+echo "**** cleanup ****" && \
+npm cache clear > /dev/null 2>&1 && \
     apt-get clean && \
     rm -rf \
 	/tmp/* \
