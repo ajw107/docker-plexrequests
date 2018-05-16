@@ -44,7 +44,7 @@ RUN \
  mv /tmp/mongo_app/bin/mongod /usr/bin/ && \
 
 echo "**** install plexrequests ****" && \
-RUN curl -o \
+curl -o \
  /tmp/source.tar.gz -L https://api.github.com/repos/lokenx/plexrequests-meteor/tarball &&\
  mkdir -p \
 	${COPIED_APP_PATH} && \
